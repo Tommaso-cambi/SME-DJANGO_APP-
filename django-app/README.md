@@ -30,12 +30,6 @@ L'applicazione include i seguenti moduli:
 
 ## Installazione
 
-1. Clona il repository:
-   ```
-   git clone https://github.com/JacopoCeravolo/django-app.git
-   cd django-app
-   ```
-
 2. Installa le dipendenze:
    ```
    pip install -r requirements.txt
