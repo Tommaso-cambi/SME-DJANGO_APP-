@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SME Manager{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2 class="logo">SME<span>Manager</span></h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="{% url 'index' %}" class="{% if request.path == '/' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'employee_list' %}" class="{% if 'employees' in request.path %}active{% endif %}">
+                    <i class="fas fa-users"></i> Dipendenti
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'finances_dashboard' %}" class="{% if 'finances' in request.path %}active{% endif %}">
+                    <i class="fas fa-coins"></i> Finanze
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'orders_dashboard' %}" class="{% if 'orders' in request.path %}active{% endif %}">
+                    <i class="fas fa-shopping-cart"></i> Ordini
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'admin:index' %}">
+                    <i class="fas fa-cog"></i> Amministrazione
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle submenu
+            const menuItems = document.querySelectorAll('.sidebar-menu > li');
+            
+            menuItems.forEach(item => {
+                const link = item.querySelector('a');
+                const submenu = item.querySelector('.submenu');
+                
+                if (submenu) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        item.classList.toggle('open');
+                    });
+                    
+                    // If active, open the submenu
+                    if (link.classList.contains('active')) {
+                        item.classList.add('open');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

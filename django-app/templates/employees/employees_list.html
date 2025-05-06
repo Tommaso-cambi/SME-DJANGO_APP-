@@ -1,0 +1,141 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Gestione Dipendenti - SME Manager{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 class="form-title">Gestione Dipendenti</h1>
+    
+    <div class="table-actions mb-3">
+        <a href="{% url 'admin:employees_employee_add' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Aggiungi Dipendente
+        </a>
+    </div>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Dipartimento</th>
+                <th>Posizione</th>
+                <th>Stato</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if employees %}
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                    <td>{{ employee.email }}</td>
+                    <td>{{ employee.department }}</td>
+                    <td>{{ employee.position }}</td>
+                    <td>{{ employee.get_employment_status_display }}</td>
+                    <td>
+                        <a href="{% url 'admin:employees_employee_change' employee.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin:employees_employee_delete' employee.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">Nessun dipendente trovato</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-container">
+            <h2 class="form-title">Dipartimenti</h2>
+            <div class="table-actions mb-3">
+                <a href="{% url 'admin:employees_department_add' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Aggiungi Dipartimento
+                </a>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrizione</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if departments %}
+                        {% for dept in departments %}
+                        <tr>
+                            <td>{{ dept.name }}</td>
+                            <td>{{ dept.description }}</td>
+                            <td>
+                                <a href="{% url 'admin:employees_department_change' dept.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin:employees_department_delete' dept.id %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">Nessun dipartimento trovato</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="form-container">
+            <h2 class="form-title">Posizioni</h2>
+            <div class="table-actions mb-3">
+                <a href="{% url 'admin:employees_position_add' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Aggiungi Posizione
+                </a>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Titolo</th>
+                        <th>Dipartimento</th>
+                        <th>Range Salariale</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if positions %}
+                        {% for pos in positions %}
+                        <tr>
+                            <td>{{ pos.title }}</td>
+                            <td>{{ pos.department }}</td>
+                            <td>€{{ pos.salary_range_min }} - €{{ pos.salary_range_max }}</td>
+                            <td>
+                                <a href="{% url 'admin:employees_position_change' pos.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin:employees_position_delete' pos.id %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">Nessuna posizione trovata</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

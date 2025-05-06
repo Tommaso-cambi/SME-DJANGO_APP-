@@ -1,0 +1,170 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Dashboard - SME Manager{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+
+<div class="dashboard-cards">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Dipendenti</h2>
+            <div class="card-icon blue">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+        <div class="card-value">{{ employee_count|default:"0" }}</div>
+        <div class="card-description">Totale dipendenti</div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Entrate Mese</h2>
+            <div class="card-icon green">
+                <i class="fas fa-euro-sign"></i>
+            </div>
+        </div>
+        <div class="card-value">€{{ income_month|default:"0" }}</div>
+        <div class="card-description">Entrate del mese corrente</div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Uscite Mese</h2>
+            <div class="card-icon red">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+        <div class="card-value">€{{ expense_month|default:"0" }}</div>
+        <div class="card-description">Uscite del mese corrente</div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Ordini</h2>
+            <div class="card-icon orange">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+        </div>
+        <div class="card-value">{{ pending_orders|default:"0" }}</div>
+        <div class="card-description">Ordini in attesa</div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="data-table-container">
+            <div class="table-header">
+                <h3 class="table-title">Dipendenti Recenti</h3>
+                <div class="table-actions">
+                    <a href="{% url 'admin:employees_employee_changelist' %}" class="btn btn-primary">Vedi Tutti</a>
+                </div>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Dipartimento</th>
+                        <th>Posizione</th>
+                        <th>Data Assunzione</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if recent_employees %}
+                        {% for emp in recent_employees %}
+                        <tr>
+                            <td>{{ emp.first_name }} {{ emp.last_name }}</td>
+                            <td>{{ emp.department }}</td>
+                            <td>{{ emp.position }}</td>
+                            <td>{{ emp.hire_date }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4">Nessun dipendente trovato</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="data-table-container">
+            <div class="table-header">
+                <h3 class="table-title">Ordini Recenti</h3>
+                <div class="table-actions">
+                    <a href="{% url 'admin:orders_order_changelist' %}" class="btn btn-primary">Vedi Tutti</a>
+                </div>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Numero Ordine</th>
+                        <th>Cliente</th>
+                        <th>Data</th>
+                        <th>Stato</th>
+                        <th>Totale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if recent_orders %}
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td>{{ order.order_number }}</td>
+                            <td>{{ order.customer }}</td>
+                            <td>{{ order.date }}</td>
+                            <td>{{ order.get_status_display }}</td>
+                            <td>€{{ order.total_amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5">Nessun ordine trovato</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="data-table-container mt-4">
+    <div class="table-header">
+        <h3 class="table-title">Transazioni Recenti</h3>
+        <div class="table-actions">
+            <a href="{% url 'admin:finances_transaction_changelist' %}" class="btn btn-primary">Vedi Tutte</a>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Data</th>
+                <th>Categoria</th>
+                <th>Descrizione</th>
+                <th>Importo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if recent_transactions %}
+                {% for trans in recent_transactions %}
+                <tr>
+                    <td>{{ trans.get_transaction_type_display }}</td>
+                    <td>{{ trans.date }}</td>
+                    <td>{{ trans.category }}</td>
+                    <td>{{ trans.description }}</td>
+                    <td class="{% if trans.transaction_type == 'I' %}text-success{% else %}text-danger{% endif %}">
+                        €{{ trans.amount }}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5">Nessuna transazione trovata</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

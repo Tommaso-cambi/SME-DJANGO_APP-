@@ -1,0 +1,287 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Gestione Ordini - SME Manager{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Gestione Ordini</h1>
+
+<div class="dashboard-cards">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Ordini Clienti</h2>
+            <div class="card-icon blue">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+        <div class="card-value">{{ customer_orders_count|default:"0" }}</div>
+        <div class="card-description">Totale ordini clienti</div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Ordini Fornitori</h2>
+            <div class="card-icon orange">
+                <i class="fas fa-truck"></i>
+            </div>
+        </div>
+        <div class="card-value">{{ supplier_orders_count|default:"0" }}</div>
+        <div class="card-description">Totale ordini fornitori</div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Prodotti</h2>
+            <div class="card-icon green">
+                <i class="fas fa-box"></i>
+            </div>
+        </div>
+        <div class="card-value">{{ products_count|default:"0" }}</div>
+        <div class="card-description">Totale prodotti in catalogo</div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Prodotti da Riordinare</h2>
+            <div class="card-icon red">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+        </div>
+        <div class="card-value">{{ products_to_reorder|default:"0" }}</div>
+        <div class="card-description">Prodotti sotto scorta minima</div>
+    </div>
+</div>
+
+<div class="data-table-container mt-4">
+    <div class="table-header">
+        <h3 class="table-title">Ordini Clienti Recenti</h3>
+        <div class="table-actions">
+            <a href="{% url 'admin:orders_order_add' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Nuovo Ordine
+            </a>
+            <a href="{% url 'admin:orders_order_changelist' %}" class="btn btn-primary">
+                <i class="fas fa-list"></i> Vedi Tutti
+            </a>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Numero Ordine</th>
+                <th>Cliente</th>
+                <th>Data</th>
+                <th>Stato</th>
+                <th>Totale</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if customer_orders %}
+                {% for order in customer_orders %}
+                <tr>
+                    <td>{{ order.order_number }}</td>
+                    <td>{{ order.customer }}</td>
+                    <td>{{ order.date }}</td>
+                    <td>
+                        <span class="badge
+                            {% if order.status == 'P' %}bg-warning
+                            {% elif order.status == 'C' %}bg-primary
+                            {% elif order.status == 'S' %}bg-info
+                            {% elif order.status == 'D' %}bg-success
+                            {% elif order.status == 'X' %}bg-danger
+                            {% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td>€{{ order.total_amount }}</td>
+                    <td>
+                        <a href="{% url 'admin:orders_order_change' order.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin:orders_order_delete' order.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">Nessun ordine cliente trovato</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="data-table-container mt-4">
+    <div class="table-header">
+        <h3 class="table-title">Ordini Fornitori Recenti</h3>
+        <div class="table-actions">
+            <a href="{% url 'admin:orders_purchaseorder_add' %}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Nuovo Ordine
+            </a>
+            <a href="{% url 'admin:orders_purchaseorder_changelist' %}" class="btn btn-primary">
+                <i class="fas fa-list"></i> Vedi Tutti
+            </a>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Numero Ordine</th>
+                <th>Fornitore</th>
+                <th>Data</th>
+                <th>Stato</th>
+                <th>Totale</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if purchase_orders %}
+                {% for order in purchase_orders %}
+                <tr>
+                    <td>{{ order.po_number }}</td>
+                    <td>{{ order.supplier }}</td>
+                    <td>{{ order.date }}</td>
+                    <td>
+                        <span class="badge
+                            {% if order.status == 'D' %}bg-warning
+                            {% elif order.status == 'S' %}bg-primary
+                            {% elif order.status == 'A' %}bg-info
+                            {% elif order.status == 'R' %}bg-success
+                            {% elif order.status == 'C' %}bg-danger
+                            {% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td>€{{ order.total_amount }}</td>
+                    <td>
+                        <a href="{% url 'admin:orders_purchaseorder_change' order.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin:orders_purchaseorder_delete' order.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">Nessun ordine fornitore trovato</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="form-container">
+            <h2 class="form-title">Prodotti Sotto Scorta</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>SKU</th>
+                        <th>Quantità</th>
+                        <th>Livello Minimo</th>
+                        <th>Fornitore</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if low_stock_products %}
+                        {% for product in low_stock_products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.sku }}</td>
+                            <td class="text-danger">{{ product.stock_quantity }}</td>
+                            <td>{{ product.min_stock_level }}</td>
+                            <td>{{ product.main_supplier }}</td>
+                            <td>
+                                <a href="{% url 'admin:orders_product_change' product.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-success btn-sm">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">Nessun prodotto sotto scorta</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="form-container">
+            <h2 class="form-title">Clienti e Fornitori</h2>
+            <div class="table-actions mb-3">
+                <a href="{% url 'admin:orders_customer_add' %}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Nuovo Cliente
+                </a>
+                <a href="{% url 'admin:orders_supplier_add' %}" class="btn btn-success">
+                    <i class="fas fa-industry"></i> Nuovo Fornitore
+                </a>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Contatto</th>
+                        <th>Email</th>
+                        <th>Telefono</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if customers %}
+                        {% for customer in customers %}
+                        <tr>
+                            <td>{{ customer.name }}</td>
+                            <td>Cliente</td>
+                            <td>{{ customer.contact_person }}</td>
+                            <td>{{ customer.email }}</td>
+                            <td>{{ customer.phone }}</td>
+                            <td>
+                                <a href="{% url 'admin:orders_customer_change' customer.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% if suppliers %}
+                        {% for supplier in suppliers %}
+                        <tr>
+                            <td>{{ supplier.name }}</td>
+                            <td>Fornitore</td>
+                            <td>{{ supplier.contact_person }}</td>
+                            <td>{{ supplier.email }}</td>
+                            <td>{{ supplier.phone }}</td>
+                            <td>
+                                <a href="{% url 'admin:orders_supplier_change' supplier.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% if not customers and not suppliers %}
+                        <tr>
+                            <td colspan="6" class="text-center">Nessun cliente o fornitore trovato</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

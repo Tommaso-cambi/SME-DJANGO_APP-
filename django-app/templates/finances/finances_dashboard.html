@@ -1,0 +1,289 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Gestione Finanziaria - SME Manager{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Gestione Finanziaria</h1>
+
+<div class="dashboard-cards">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Entrate Totali</h2>
+            <div class="card-icon green">
+                <i class="fas fa-euro-sign"></i>
+            </div>
+        </div>
+        <div class="card-value">€{{ total_income|default:"0" }}</div>
+        <div class="card-description">Tutte le entrate</div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Uscite Totali</h2>
+            <div class="card-icon red">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+        <div class="card-value">€{{ total_expenses|default:"0" }}</div>
+        <div class="card-description">Tutte le uscite</div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Bilancio</h2>
+            <div class="card-icon blue">
+                <i class="fas fa-balance-scale"></i>
+            </div>
+        </div>
+        <div class="card-value">€{{ balance|default:"0" }}</div>
+        <div class="card-description">Entrate - Uscite</div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Conti</h2>
+            <div class="card-icon orange">
+                <i class="fas fa-wallet"></i>
+            </div>
+        </div>
+        <div class="card-value">{{ accounts_count|default:"0" }}</div>
+        <div class="card-description">Numero di conti</div>
+    </div>
+</div>
+
+<div class="form-container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="form-title">Registra Transazione</h2>
+            <form method="post" action="{% url 'admin:finances_transaction_add' %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Tipo di Transazione</label>
+                            <select name="transaction_type" class="form-control">
+                                <option value="I">Entrata</option>
+                                <option value="E">Uscita</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Data</label>
+                            <input type="date" name="date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Importo</label>
+                            <input type="number" step="0.01" name="amount" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Categoria</label>
+                            <select name="category" class="form-control">
+                                {% if categories %}
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.id }}">{{ cat.name }} ({{ cat.get_type_display }})</option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="">Nessuna categoria disponibile</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Conto</label>
+                            <select name="account" class="form-control">
+                                {% if accounts %}
+                                    {% for acc in accounts %}
+                                        <option value="{{ acc.id }}">{{ acc.name }} (€{{ acc.current_balance }})</option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="">Nessun conto disponibile</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Descrizione</label>
+                    <textarea name="description" class="form-control" rows="3" required></textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Metodo di Pagamento</label>
+                            <select name="payment_method" class="form-control">
+                                <option value="CA">Contanti</option>
+                                <option value="BT">Bonifico Bancario</option>
+                                <option value="CC">Carta di Credito</option>
+                                <option value="CH">Assegno</option>
+                                <option value="OL">Pagamento Online</option>
+                                <option value="OT">Altro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Numero di Riferimento</label>
+                            <input type="text" name="reference_number" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Registra Transazione</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="data-table-container mt-4">
+    <div class="table-header">
+        <h3 class="table-title">Transazioni Recenti</h3>
+        <div class="table-actions">
+            <a href="{% url 'admin:finances_transaction_changelist' %}" class="btn btn-primary">Vedi Tutte</a>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Data</th>
+                <th>Categoria</th>
+                <th>Conto</th>
+                <th>Descrizione</th>
+                <th>Importo</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if transactions %}
+                {% for trans in transactions %}
+                <tr>
+                    <td>{{ trans.get_transaction_type_display }}</td>
+                    <td>{{ trans.date }}</td>
+                    <td>{{ trans.category }}</td>
+                    <td>{{ trans.account }}</td>
+                    <td>{{ trans.description }}</td>
+                    <td class="{% if trans.transaction_type == 'I' %}text-success{% else %}text-danger{% endif %}">
+                        €{{ trans.amount }}
+                    </td>
+                    <td>
+                        <a href="{% url 'admin:finances_transaction_change' trans.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'admin:finances_transaction_delete' trans.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">Nessuna transazione trovata</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="form-container">
+            <h2 class="form-title">Gestione Conti</h2>
+            <div class="table-actions mb-3">
+                <a href="{% url 'admin:finances_account_add' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Aggiungi Conto
+                </a>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Saldo Attuale</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if accounts %}
+                        {% for acc in accounts %}
+                        <tr>
+                            <td>{{ acc.name }}</td>
+                            <td>{{ acc.get_account_type_display }}</td>
+                            <td>€{{ acc.current_balance }}</td>
+                            <td>
+                                <a href="{% url 'admin:finances_account_change' acc.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin:finances_account_delete' acc.id %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">Nessun conto trovato</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="form-container">
+            <h2 class="form-title">Categorie</h2>
+            <div class="table-actions mb-3">
+                <a href="{% url 'admin:finances_category_add' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Aggiungi Categoria
+                </a>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Descrizione</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if categories %}
+                        {% for cat in categories %}
+                        <tr>
+                            <td>{{ cat.name }}</td>
+                            <td>{{ cat.get_type_display }}</td>
+                            <td>{{ cat.description }}</td>
+                            <td>
+                                <a href="{% url 'admin:finances_category_change' cat.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin:finances_category_delete' cat.id %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">Nessuna categoria trovata</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
