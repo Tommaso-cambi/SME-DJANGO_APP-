@@ -30,7 +30,7 @@ L'applicazione include i seguenti moduli:
 
 ## Installazione
 
-2. Installa le dipendenze:
+1. Installa le dipendenze:
    ```
    pip install -r requirements.txt
    ```
