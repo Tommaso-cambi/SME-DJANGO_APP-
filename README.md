@@ -73,14 +73,14 @@ L'applicazione sarà disponibile all'indirizzo: http://127.0.0.1:8000/
 - crispy-bootstrap5 (template Bootstrap 5)
 
 ## Funzionalità Future
-- [ ] Integrazione con sistemi di pagamento online
-- [ ] API REST per integrazione con altri sistemi
-- [ ] Reportistica avanzata e grafici
-- [ ] Sistema di notifiche email
-- [ ] App mobile companion
-- [ ] Integrazione con software contabili
-- [ ] Sistema di backup automatico
-- [ ] Gestione documenti digitali
+- Integrazione con sistemi di pagamento online
+-  Reportistica avanzata e grafici
+-  Sistema di notifiche email
+-  App mobile companion
+-  Integrazione con software contabili
+-  Sistema di backup automatico
+  
+    
 
 ## Riferimenti Utili
 - [Documentazione Django](https://docs.djangoproject.com/)
@@ -88,11 +88,3 @@ L'applicazione sarà disponibile all'indirizzo: http://127.0.0.1:8000/
 - [Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.0/getting-started/introduction/)
 - [Python Virtual Environment](https://docs.python.org/3/library/venv.html)
 
-## Contribuire
-Le pull request sono benvenute. Per modifiche importanti, apri prima un issue per discutere cosa vorresti cambiare.
-
-## Licenza
-[MIT](https://choosealicense.com/licenses/mit/)
-
-## Contatti
-Per supporto o domande, contattare: [inserire email o altri contatti]
